@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Programs/Projects/ML_Projects/NetworkSecurity/mlruns/0/c5b85846bfac414ebe13bb31f3dd63b3/artifacts
+end_time: 1759073556127
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c5b85846bfac414ebe13bb31f3dd63b3
+run_name: worried-fly-111
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1759073550120
+status: 3
+tags: []
+user_id: Hp
