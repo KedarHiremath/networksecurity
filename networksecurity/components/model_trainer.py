@@ -25,6 +25,12 @@ from sklearn.ensemble import (
 )
 
 import mlflow
+import joblib
+import tempfile
+
+import dagshub
+dagshub.init(repo_owner='KedarHiremath', repo_name='networksecurity', mlflow=True)
+
 
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,data_transformation_artifact:DataTransformationArtifact):
@@ -40,10 +46,20 @@ class ModelTrainer:
             precision_score=classificationmetric.precision_score
             recall_score=classificationmetric.recall_score
 
+            # create a temporary file path
+            with tempfile.NamedTemporaryFile(suffix=".pkl", delete=False) as tmp_file:
+                temp_path = tmp_file.name
+
+            # save model to file
+            joblib.dump(best_model, temp_path)
+
+
             mlflow.log_metric("f1_score",f1_score)
             mlflow.log_metric("precision",precision_score)
             mlflow.log_metric("recall_score",recall_score)
-            mlflow.sklearn.log_model(best_model,"model")
+            mlflow.log_artifact(temp_path, artifact_path="model")
+            os.remove(temp_path)   # cleanup
+
         
     def train_model(self,X_train,y_train,x_test,y_test):
         models = {
@@ -111,6 +127,8 @@ class ModelTrainer:
 
         Network_Model=NetworkModel(preprocessor=preprocessor,model=best_model)
         save_object(self.model_trainer_config.trained_model_file_path,obj=NetworkModel)
+
+        save_object("final_model/model.pkl",best_model)
 
         ## Model Trainer Artifact
         model_trainer_artifact=ModelTrainerArtifact(trained_model_file_path=self.model_trainer_config.trained_model_file_path,
